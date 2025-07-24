@@ -1,6 +1,25 @@
 {
   "default_provider": "google",
   "providers": {
+    "moonshot": {
+      "client_class": "MoonshotClient",
+      "default_model": "moonshot-v1-8k",
+      "supportsCustomModel": true,
+      "models": {
+        "kimi-k2-0711-preview": {
+          "temperature": 0.7,
+          "top_p": 0.8
+        },
+        "kimi-latest": {
+          "temperature": 0.7,
+          "top_p": 0.8
+        },
+        "moonshot-v1-128k": {
+          "temperature": 0.7,
+          "top_p": 0.8
+        }
+      }
+    },
     "dashscope": {
       "default_model": "qwen-plus",
       "supportsCustomModel": true,
@@ -185,4 +204,3 @@
     }
   }
 }
-

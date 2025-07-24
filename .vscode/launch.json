@@ -1,19 +1,22 @@
 {
-    "version": "0.2.0",
-    "configurations": [
-        {
-            "name": "Deepwiki-Open",
-            "type": "python",
-            "request": "launch",
-            "module": "uvicorn",
-            "args": [
-                "api.api:app",
-                "--reload",
-                "--port",
-                "8001"
-            ],
-            "jinja": true,
-            "justMyCode": true
-        }
-    ]
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Deepwiki-Open",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "uvicorn",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "args": [
+        "api.api:app",
+        "--reload",
+        "--port",
+        "8001"
+      ],
+      "jinja": true,
+      "justMyCode": true,
+      "envFile": ".env"
+    }
+  ]
 }

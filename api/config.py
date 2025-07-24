@@ -12,6 +12,7 @@ from api.openrouter_client import OpenRouterClient
 from api.bedrock_client import BedrockClient
 from api.azureai_client import AzureAIClient
 from api.dashscope_client import DashscopeClient
+from api.moonshot_client import MoonshotClient
 from adalflow import GoogleGenAIClient, OllamaClient
 
 # Get API keys from environment variables
@@ -22,6 +23,7 @@ AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
 AWS_REGION = os.environ.get('AWS_REGION')
 AWS_ROLE_ARN = os.environ.get('AWS_ROLE_ARN')
+MOONSHOT_API_KEY = os.environ.get('MOONSHOT_API_KEY')
 
 # Set keys in environment (in case they're needed elsewhere in the code)
 if OPENAI_API_KEY:
@@ -38,6 +40,8 @@ if AWS_REGION:
     os.environ["AWS_REGION"] = AWS_REGION
 if AWS_ROLE_ARN:
     os.environ["AWS_ROLE_ARN"] = AWS_ROLE_ARN
+if MOONSHOT_API_KEY:
+    os.environ["MOONSHOT_API_KEY"] = MOONSHOT_API_KEY
 
 # Wiki authentication settings
 raw_auth_mode = os.environ.get('DEEPWIKI_AUTH_MODE', 'False')
@@ -55,7 +59,8 @@ CLIENT_CLASSES = {
     "OllamaClient": OllamaClient,
     "BedrockClient": BedrockClient,
     "AzureAIClient": AzureAIClient,
-    "DashscopeClient": DashscopeClient
+    "DashscopeClient": DashscopeClient,
+    "MoonshotClient": MoonshotClient
 }
 
 def replace_env_placeholders(config: Union[Dict[str, Any], List[Any], str, Any]) -> Union[Dict[str, Any], List[Any], str, Any]:
@@ -123,7 +128,7 @@ def load_generator_config():
             if provider_config.get("client_class") in CLIENT_CLASSES:
                 provider_config["model_client"] = CLIENT_CLASSES[provider_config["client_class"]]
             # Fall back to default mapping based on provider_id
-            elif provider_id in ["google", "openai", "openrouter", "ollama", "bedrock", "azure", "dashscope"]:
+            elif provider_id in ["google", "openai", "openrouter", "ollama", "bedrock", "azure", "dashscope", "moonshot"]:
                 default_map = {
                     "google": GoogleGenAIClient,
                     "openai": OpenAIClient,
@@ -131,7 +136,8 @@ def load_generator_config():
                     "ollama": OllamaClient,
                     "bedrock": BedrockClient,
                     "azure": AzureAIClient,
-                    "dashscope": DashscopeClient
+                    "dashscope": DashscopeClient,
+                    "moonshot": MoonshotClient
                 }
                 provider_config["model_client"] = default_map[provider_id]
             else:
@@ -291,7 +297,7 @@ def get_model_config(provider="google", model=None):
     Get configuration for the specified provider and model
 
     Parameters:
-        provider (str): Model provider ('google', 'openai', 'openrouter', 'ollama', 'bedrock')
+        provider (str): Model provider ('google', 'openai', 'openrouter', 'ollama', 'bedrock', 'azure', 'dashscope', 'moonshot')
         model (str): Model name, or None to use default model
 
     Returns:
