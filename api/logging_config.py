@@ -1,10 +1,27 @@
 import logging
 import os
+import sys
 from pathlib import Path
 
 class IgnoreLogChangeDetectedFilter(logging.Filter):
     def filter(self, record: logging.LogRecord):
         return "Detected file change in" not in record.getMessage()
+
+class SafeUnicodeFilter(logging.Filter):
+    """Filter to handle Unicode encoding issues by replacing problematic characters."""
+    def filter(self, record: logging.LogRecord):
+        try:
+            # Try to encode the message to detect encoding issues
+            record.getMessage().encode('gbk')
+            return True
+        except UnicodeEncodeError:
+            # Replace problematic Unicode characters with safe alternatives
+            original_msg = record.getMessage()
+            safe_msg = original_msg.replace('🔍', '[DEBUG]').replace('😭', '[ERROR]')
+            # Update the record's message
+            record.msg = safe_msg
+            record.args = ()
+            return True
 
 def setup_logging(format: str = None):
     """
@@ -34,20 +51,32 @@ def setup_logging(format: str = None):
     # Ensure parent dirs exist for the log file
     resolved_path.parent.mkdir(parents=True, exist_ok=True)
 
+    # Create console handler with UTF-8 encoding
+    console_handler = logging.StreamHandler(sys.stdout)
+    console_handler.setLevel(log_level)
+    
+    # Set UTF-8 encoding for console output on Windows
+    if hasattr(sys.stdout, 'reconfigure'):
+        try:
+            sys.stdout.reconfigure(encoding='utf-8')
+        except Exception:
+            pass  # Fallback if reconfigure fails
+    
     # Configure logging handlers and format
     logging.basicConfig(
         level=log_level,
         format = format or "%(asctime)s - %(levelname)s - %(name)s - %(filename)s:%(lineno)d - %(message)s",
         handlers=[
-            logging.FileHandler(resolved_path),
-            logging.StreamHandler()
+            logging.FileHandler(resolved_path, encoding='utf-8'),
+            console_handler
         ],
         force=True
     )
     
-    # Ignore log file's change detection
+    # Add filters to all handlers
     for handler in logging.getLogger().handlers:
         handler.addFilter(IgnoreLogChangeDetectedFilter())
+        handler.addFilter(SafeUnicodeFilter())
 
     # Initial debug message to confirm configuration
     logger = logging.getLogger(__name__)
