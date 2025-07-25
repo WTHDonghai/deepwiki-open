@@ -87,7 +87,19 @@ pip install -r api/requirements.txt
 python -m api.main
 ```
 
-#### Step 3: Start the Frontend
+#### Step 3: Configure Local Fonts (Optional)
+
+To avoid dynamic font downloads from Google Fonts and improve loading performance:
+
+```bash
+# Download required font files automatically
+npm run download-fonts
+
+# Or manually place font files in public/fonts/
+# See public/fonts/README.md for detailed instructions
+```
+
+#### Step 4: Start the Frontend
 
 ```bash
 # Install JavaScript dependencies
@@ -101,7 +113,7 @@ npm run dev
 yarn dev
 ```
 
-#### Step 4: Use DeepWiki!
+#### Step 5: Use DeepWiki!
 
 1. Open [http://localhost:3000](http://localhost:3000) in your browser
 2. Enter a GitHub, GitLab, or Bitbucket repository (like `https://github.com/openai/codex`, `https://github.com/microsoft/autogen`, `https://gitlab.com/gitlab-org/gitlab`, or `https://bitbucket.org/redradish/atlassian_app_versions`)
